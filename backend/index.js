@@ -1,9 +1,11 @@
 const express = require("express");
 const dotenv = require("dotenv");
+const cookieParser = require("cookie-parser")
 const mongoose = require("mongoose")
 dotenv.config()
 const cors = require("cors")
-const AuthRouter = require("./routes/Auth.routes")
+const AuthRouter = require("./routes/Auth.routes");
+const UserRouter = require("./routes/User.route");
 
 const app = express();
 
@@ -11,7 +13,16 @@ const app = express();
 
 app.use(express.json())
 
-app.use(cors())
+// parsing cookie
+
+app.use(cookieParser())
+
+const corsOptions = {
+    origin: ["http://localhost:5173"],
+    credentials: true,
+}
+
+app.use(cors(corsOptions))
 
 // connect to db
 
@@ -26,6 +37,8 @@ mongoose.connect(process.env.MONGO_URI).then(() => {
 // })
 
 app.use("/auth", AuthRouter)
+
+app.use("/user", UserRouter)
 
 
 app.listen(process.env.PORT, () => {
