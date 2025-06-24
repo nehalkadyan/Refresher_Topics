@@ -4,9 +4,9 @@ const changeUsername = async(req, res) => {
    try{
 
     // user id
-    //   const userId = req.user.id;
+      const userId = req.user.id; // 6754352648376487326
 
-      const {username, userId} = req.body;
+      const {username} = req.body;
 
       // find user by id
 
@@ -14,12 +14,16 @@ const changeUsername = async(req, res) => {
 
       console.log("user", user)
 
+      // updating username
       user.username = username;
 
       await user.save()
 
-      return res.status(200).json({message : "User updated succesfully",})
+      console.log("user", user)
 
+      const { password : pass, ...rest} = user._doc;
+
+      return res.status(200).json({message : "User updated succesfully", userDetails: rest})
 
    }catch(err){
     console.error(err);
