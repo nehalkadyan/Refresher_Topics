@@ -6,6 +6,7 @@ dotenv.config()
 const cors = require("cors")
 const AuthRouter = require("./routes/Auth.routes");
 const UserRouter = require("./routes/User.route");
+const ProductRouter = require("./routes/Products.routes")
 
 const app = express();
 
@@ -39,6 +40,8 @@ mongoose.connect(process.env.MONGO_URI).then(() => {
 app.use("/auth", AuthRouter)
 
 app.use("/user", UserRouter)
+
+app.use("/product", ProductRouter)
 
 
 app.listen(process.env.PORT, () => {

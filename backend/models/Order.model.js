@@ -23,14 +23,13 @@ const OrderSchema = new mongoose.Schema({
         }
     ],
 
-    totolAmount : {
+    totalAmount : {
         type : Number,
         required : true
     },
 
-    billId : {
+    bill_Id : {
         type : String,
-        required : true
     }
 
 
