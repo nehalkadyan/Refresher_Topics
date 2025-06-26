@@ -9,6 +9,9 @@ import EditProfile from "./pages/EditProfile";
 import Signup from "./pages/Signup";
 import axios from "axios";
 import SignIn from "./pages/Signin";
+import Products from "./pages/Products";
+import AuthPrivateRoute from "./components/AuthPrivateRoute";
+
 
 function App() {
   // const [name, setName] = useState("xyz");
@@ -60,9 +63,9 @@ function App() {
   };
 
   // useEffect -> on load ,fetchUsers will be called
-  useEffect(() => {
-    fetchUsers();
-  }, []);
+  // useEffect(() => {
+  //   fetchUsers();
+  // }, []);
 
   // search functionality
 
@@ -88,10 +91,13 @@ function App() {
       <Routes>
          <Route path="/" element = {<Home />}/>
          <Route path = "/edit" element={<EditProfile />}/>
+
+         {/* <Route element={<AuthPrivateRoute />}> */}
          <Route path= "/signup" element = {<Signup />}/>
          <Route path= "/signin" element = {<SignIn />}/>
+         {/* </Route> */}
 
-          
+         <Route path = "/products" element = {<Products />}/>
       </Routes>
     </Router>
       {/* <h1 className="text-red-400">Learning Hooks in React!</h1> */}

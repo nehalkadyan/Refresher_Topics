@@ -52,11 +52,9 @@ const purchaseProduct = async (req, res) => {
       // check whether product exists and whether the stock is lesser than the quantity
 
       if (!product && product.stock < item.quantity) {
-        return res
-          .status(400)
-          .json({
-            message: "Product currenly unvailable or insufficient stock",
-          });
+        return res.status(400).json({
+          message: "Product currenly unvailable or insufficient stock",
+        });
       }
 
       // reduce the stock
@@ -115,75 +113,98 @@ const getUsersOrders = async (req, res) => {
   }
 };
 
-const searchProducts = async(req, res) => {
-  try{
-     const {searchTerm, sortBy , order} = req.query;
+const searchProducts = async (req, res) => {
+  try {
+    const { searchTerm, sortBy = "price", order } = req.query;
 
-     // search products
+    // search products
 
-     const filter = {}
+    const filter = {};
 
-     if(searchTerm){
-       filter.name = {$regex : searchTerm, $options: "i"}
-     }
+    if (searchTerm) {
+      filter.name = { $regex: searchTerm, $options: "i" };
+    }
 
-     //sort 
+    //sort
 
-     // sort order
+    // sort order
 
-     const sortOrder = order === "desc" ? -1 : 1
+    const sortOrder = order === "desc" ? -1 : 1;
 
-     // sort criteria
+    // sort criteria
 
-     const sortCriteria = {}
+    const sortCriteria = {};
 
-     if(["price", "stock"].includes(sortBy)){
+    if (["price", "stock"].includes(sortBy)) {
       sortCriteria[sortBy] = sortOrder;
-     }
+    }
 
-     /*
+    /*
        sortCriteria = {
          stock : -1
        }
      */
 
-       // pipeline
+    // pipeline
 
-      const pipeline = [
+    const pipeline = [
+      // stage 1 - ilter stage
+      {
+        $match: filter,
+      },
 
-        // stage 1 - ilter stage
-        {
-           $match: filter
+      // stage 2 - return only specified fields
+
+      {
+        $project: {
+          name: 1, // name field
+          price: 1, // price field
+          stock : 1  // stock field
         },
+      },
 
-        // stage 2 - return only specified fields
-
-        {
-          $project: {
-            name: 1,  // name field
-            price: 1,  // price field
-            // stock : 1  // stock field
-          }
-        },
-
-        // sort - stage 3
-        {
-          $sort: sortCriteria
-        }
-      ]
+      // sort - stage 3
+      // {
+      //   $sort: sortCriteria,
+      // },
+    ];
 
     //  const products = await Product.find(filter).sort(sortCriteria);
 
+    if(Object.keys(sortCriteria).length > 0){
+      pipeline.push({
+         $sort: sortCriteria,
+      })
+    }
+
     const products = await Product.aggregate(pipeline);
 
-     return res.status(200).json({message : "Products searched!", products})
-
-  }catch(err){
-    console.log("Error searching products", err)
-    return res.statusw(500).json({message : "Internal Server Error", err})
+    return res.status(200).json({ message: "Products searched!", products });
+  } catch (err) {
+    console.log("Error searching products", err);
+    return res.status(500).json({ message: "Internal Server Error", err });
   }
+};
+
+// controller function to fetch all products
+
+const getAllProducts = async(req , res) => {
+   try{
+
+    // find all products
+      const all_products = await Product.find();
+
+      return res.status(200).json({message : "Products fetched!", all_products})
+   }catch(err){
+       console.log(err);
+       return res.status(500).json({message : "Internal Server Error", err})
+   }
 }
 
-
-
-module.exports = { insertProducts, purchaseProduct, getUsersOrders, searchProducts };
+module.exports = {
+  insertProducts,
+  purchaseProduct,
+  getUsersOrders,
+  searchProducts,
+  getAllProducts
+};
